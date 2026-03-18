@@ -1,0 +1,367 @@
+import { useEffect, useMemo, useState } from 'react'
+import type { FormEvent } from 'react'
+import { addGame, getGames, removeGame, searchIgdb } from './api'
+import type { Game, IgdbSuggestion, NewGamePayload } from './types'
+import './App.css'
+
+type FormState = {
+  title: string
+  platform: string
+  rating: number
+  cover_url: string
+  genre: string
+  release_year: string
+  metacritic: string
+  igdb_id: number | null
+}
+
+const initialForm: FormState = {
+  title: '',
+  platform: '',
+  rating: 3,
+  cover_url: '',
+  genre: '',
+  release_year: '',
+  metacritic: '',
+  igdb_id: null,
+}
+
+function App() {
+  const [games, setGames] = useState<Game[]>([])
+  const [search, setSearch] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [showModal, setShowModal] = useState(false)
+  const [form, setForm] = useState<FormState>(initialForm)
+  const [igdbResults, setIgdbResults] = useState<IgdbSuggestion[]>([])
+  const [isSearchingIgdb, setIsSearchingIgdb] = useState(false)
+
+  async function loadGames(currentSearch: string) {
+    setIsLoading(true)
+    try {
+      const result = await getGames(currentSearch)
+      setGames(result)
+      setErrorMessage('')
+    } catch (error) {
+      setErrorMessage(String(error))
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    loadGames('')
+  }, [])
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      loadGames(search)
+    }, 220)
+    return () => window.clearTimeout(timer)
+  }, [search])
+
+  useEffect(() => {
+    if (!showModal) {
+      return
+    }
+    const term = form.title.trim()
+    if (term.length < 2) {
+      setIgdbResults([])
+      return
+    }
+
+    const timer = window.setTimeout(async () => {
+      setIsSearchingIgdb(true)
+      try {
+        const results = await searchIgdb(term)
+        setIgdbResults(results)
+      } catch {
+        setIgdbResults([])
+      } finally {
+        setIsSearchingIgdb(false)
+      }
+    }, 350)
+
+    return () => window.clearTimeout(timer)
+  }, [form.title, showModal])
+
+  const visibleGames = useMemo(() => games, [games])
+
+  function applySuggestion(game: IgdbSuggestion) {
+    setForm((previous) => ({
+      ...previous,
+      title: game.title,
+      platform: game.platforms.join(', '),
+      cover_url: game.cover_url ?? '',
+      genre: game.genres.join(', '),
+      release_year: game.release_year ? String(game.release_year) : '',
+      metacritic: game.metacritic ? String(game.metacritic) : '',
+      igdb_id: game.igdb_id,
+    }))
+    setIgdbResults([])
+  }
+
+  function openModal() {
+    setForm(initialForm)
+    setIgdbResults([])
+    setShowModal(true)
+  }
+
+  async function submitNewGame(event: FormEvent) {
+    event.preventDefault()
+    setIsSaving(true)
+
+    const payload: NewGamePayload = {
+      title: form.title.trim(),
+      platform: form.platform.trim(),
+      rating: form.rating,
+      cover_url: form.cover_url.trim() || null,
+      genre: form.genre.trim() || null,
+      release_year: form.release_year ? Number(form.release_year) : null,
+      metacritic: form.metacritic ? Number(form.metacritic) : null,
+      igdb_id: form.igdb_id,
+    }
+
+    try {
+      await addGame(payload)
+      setShowModal(false)
+      await loadGames(search)
+    } catch (error) {
+      setErrorMessage(String(error))
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  async function handleDelete(id: number) {
+    try {
+      await removeGame(id)
+      await loadGames(search)
+    } catch (error) {
+      setErrorMessage(String(error))
+    }
+  }
+
+  return (
+    <main className="app-shell container-fluid">
+      <section className="hero-card">
+        <div>
+          <h1>Game Vault</h1>
+          <p className="subtitle">Tu biblioteca gamer local, rápida y visual.</p>
+        </div>
+        <button className="btn btn-accent" onClick={openModal}>
+          + Agregar juego
+        </button>
+      </section>
+
+      <section className="toolbar">
+        <input
+          className="form-control search-input"
+          placeholder="Buscar por nombre o plataforma"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+        />
+      </section>
+
+      {errorMessage ? <div className="alert alert-danger">{errorMessage}</div> : null}
+
+      <section className="table-card">
+        <div className="table-responsive">
+          <table className="table table-hover align-middle game-table">
+            <thead>
+              <tr>
+                <th>Carátula</th>
+                <th>Juego</th>
+                <th>Plataforma</th>
+                <th>Género</th>
+                <th>Año</th>
+                <th>Metacritic</th>
+                <th>Calificación</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {!isLoading && visibleGames.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="empty-cell">
+                    Aún no hay juegos. Agrega el primero con el botón superior.
+                  </td>
+                </tr>
+              ) : null}
+              {visibleGames.map((game) => (
+                <tr key={game.id}>
+                  <td>
+                    {game.cover_url ? (
+                      <img src={game.cover_url} alt={game.title} className="cover-thumb" />
+                    ) : (
+                      <div className="cover-placeholder">Sin imagen</div>
+                    )}
+                  </td>
+                  <td className="fw-semibold">{game.title}</td>
+                  <td>{game.platform || '-'}</td>
+                  <td>{game.genre || '-'}</td>
+                  <td>{game.release_year || '-'}</td>
+                  <td>{game.metacritic || '-'}</td>
+                  <td>
+                    <Stars value={game.rating} />
+                  </td>
+                  <td className="text-end">
+                    <button
+                      className="btn btn-sm btn-delete"
+                      onClick={() => handleDelete(game.id)}
+                    >
+                      x
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {showModal ? (
+        <div className="modal-backdrop">
+          <div className="modal-card">
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h2 className="modal-title">Agregar juego</h2>
+              <button className="btn btn-sm btn-outline-secondary" onClick={() => setShowModal(false)}>
+                Cerrar
+              </button>
+            </div>
+
+            <form onSubmit={submitNewGame} className="row g-3">
+              <div className="col-12 position-relative">
+                <label className="form-label">Nombre del juego</label>
+                <input
+                  className="form-control"
+                  required
+                  value={form.title}
+                  onChange={(event) =>
+                    setForm((prev) => ({ ...prev, title: event.target.value, igdb_id: null }))
+                  }
+                />
+                {isSearchingIgdb ? <span className="igdb-status">Buscando en IGDB…</span> : null}
+                {igdbResults.length > 0 ? (
+                  <div className="igdb-dropdown">
+                    {igdbResults.map((result) => (
+                      <button
+                        key={result.igdb_id}
+                        type="button"
+                        className="igdb-option"
+                        onClick={() => applySuggestion(result)}
+                      >
+                        <span>{result.title}</span>
+                        <small>
+                          {result.platforms.slice(0, 2).join(', ')}
+                          {result.release_year ? ` · ${result.release_year}` : ''}
+                        </small>
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+
+              <div className="col-md-6">
+                <label className="form-label">Plataforma</label>
+                <input
+                  className="form-control"
+                  value={form.platform}
+                  onChange={(event) => setForm((prev) => ({ ...prev, platform: event.target.value }))}
+                />
+              </div>
+              <div className="col-md-6">
+                <label className="form-label">Género</label>
+                <input
+                  className="form-control"
+                  value={form.genre}
+                  onChange={(event) => setForm((prev) => ({ ...prev, genre: event.target.value }))}
+                />
+              </div>
+
+              <div className="col-md-4">
+                <label className="form-label">Año</label>
+                <input
+                  className="form-control"
+                  type="number"
+                  min={1970}
+                  max={2100}
+                  value={form.release_year}
+                  onChange={(event) => setForm((prev) => ({ ...prev, release_year: event.target.value }))}
+                />
+              </div>
+              <div className="col-md-4">
+                <label className="form-label">Metacritic</label>
+                <input
+                  className="form-control"
+                  type="number"
+                  min={0}
+                  max={100}
+                  value={form.metacritic}
+                  onChange={(event) => setForm((prev) => ({ ...prev, metacritic: event.target.value }))}
+                />
+              </div>
+              <div className="col-md-4">
+                <label className="form-label">Calificación</label>
+                <StarPicker
+                  value={form.rating}
+                  onChange={(value) => setForm((prev) => ({ ...prev, rating: value }))}
+                />
+              </div>
+
+              <div className="col-12">
+                <label className="form-label">URL portada</label>
+                <input
+                  className="form-control"
+                  value={form.cover_url}
+                  onChange={(event) => setForm((prev) => ({ ...prev, cover_url: event.target.value }))}
+                />
+              </div>
+
+              <div className="col-12 d-flex justify-content-end gap-2">
+                <button type="button" className="btn btn-outline-secondary" onClick={() => setShowModal(false)}>
+                  Cancelar
+                </button>
+                <button type="submit" className="btn btn-accent" disabled={isSaving}>
+                  {isSaving ? 'Guardando…' : 'Guardar juego'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      ) : null}
+    </main>
+  )
+}
+
+function Stars({ value }: { value: number }) {
+  return (
+    <span className="stars" aria-label={`Calificación ${value} de 5`}>
+      {[1, 2, 3, 4, 5].map((star) => (
+        <span key={star} className={star <= value ? 'star active' : 'star'}>
+          ★
+        </span>
+      ))}
+    </span>
+  )
+}
+
+function StarPicker({ value, onChange }: { value: number; onChange: (value: number) => void }) {
+  return (
+    <div className="star-picker">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <button
+          type="button"
+          key={star}
+          className={star <= value ? 'star-btn active' : 'star-btn'}
+          onClick={() => onChange(star)}
+        >
+          ★
+        </button>
+      ))}
+    </div>
+  )
+}
+
+export default App
