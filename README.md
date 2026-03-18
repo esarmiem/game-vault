@@ -1,6 +1,8 @@
 # Game Vault
 
 Aplicación de escritorio multiplataforma para gestionar tu biblioteca de juegos con almacenamiento local.
+<img width="1226" height="838" alt="image" src="https://github.com/user-attachments/assets/08c362e4-fb07-4c0b-ae19-d6ca0c729923" />
+
 
 ## Stack
 
