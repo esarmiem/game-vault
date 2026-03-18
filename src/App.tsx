@@ -154,7 +154,7 @@ function App() {
       <section className="hero-card">
         <div>
           <h1>Game Vault</h1>
-          <p className="subtitle">Tu biblioteca gamer local, rápida y visual.</p>
+          <p className="subtitle">Lleva control de tus juegos terminados y dales tu rating.</p>
         </div>
         <button className="btn btn-accent" onClick={openModal}>
           + Agregar juego
@@ -173,7 +173,7 @@ function App() {
       {errorMessage ? <div className="alert alert-danger">{errorMessage}</div> : null}
 
       <section className="table-card">
-        <div className="table-responsive">
+        <div className="table-responsive game-list-scroll">
           <table className="table table-hover align-middle game-table">
             <thead>
               <tr>
@@ -213,12 +213,15 @@ function App() {
                     <Stars value={game.rating} />
                   </td>
                   <td className="text-end">
-                    <button
-                      className="btn btn-sm btn-delete"
-                      onClick={() => handleDelete(game.id)}
-                    >
-                      x
-                    </button>
+                    <div className="delete-action">
+                      <button
+                        className="btn btn-sm btn-delete"
+                        onClick={() => handleDelete(game.id)}
+                      >
+                        x
+                      </button>
+                      <span className="delete-tooltip">Eliminar de la lista</span>
+                    </div>
                   </td>
                 </tr>
               ))}

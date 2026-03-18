@@ -57,10 +57,19 @@
   padding: 10px 14px;
 }
 
+.game-list-scroll {
+  max-height: min(62vh, 560px);
+  overflow-y: auto;
+}
+
 .game-table th {
   font-size: 0.86rem;
   color: #667192;
   font-weight: 700;
+  position: sticky;
+  top: 0;
+  background: #ffffff;
+  z-index: 2;
 }
 
 .cover-thumb {
@@ -100,6 +109,34 @@
 
 .btn-delete:hover {
   background: #ffd7e2;
+}
+
+.delete-action {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.delete-tooltip {
+  position: absolute;
+  right: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: #ffe5ea;
+  color: #b23056;
+  border: 1px solid #ffc8d5;
+  border-radius: 8px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 6px 10px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease;
+}
+
+.delete-action:hover .delete-tooltip {
+  opacity: 1;
 }
 
 .stars {
