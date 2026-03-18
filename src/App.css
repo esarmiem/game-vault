@@ -72,6 +72,14 @@
   z-index: 2;
 }
 
+.game-row {
+  cursor: pointer;
+}
+
+.game-row:hover {
+  background: #f6f8ff;
+}
+
 .cover-thumb {
   width: 52px;
   height: 72px;
@@ -150,6 +158,97 @@
 
 .star.active {
   color: #f7b500;
+}
+
+.detail-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(21, 30, 62, 0.44);
+  display: grid;
+  place-items: center;
+  padding: 14px;
+  z-index: 25;
+}
+
+.detail-panel {
+  width: min(1040px, 100%);
+  height: min(78vh, 640px);
+  background: #fff;
+  border-radius: 20px;
+  border: 1px solid #dfe4f7;
+  box-shadow: 0 28px 50px rgba(21, 31, 67, 0.3);
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(280px, 36%) 1fr;
+  position: relative;
+}
+
+.detail-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 4;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.detail-cover-column {
+  height: 100%;
+  background: #e8ebfb;
+}
+
+.detail-cover-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.detail-cover-empty {
+  height: 100%;
+  display: grid;
+  place-items: center;
+  color: #6d7597;
+  font-weight: 600;
+}
+
+.detail-info-column {
+  padding: 32px;
+  overflow-y: auto;
+}
+
+.detail-title {
+  margin: 0;
+  font-size: 2rem;
+  color: #1e2440;
+}
+
+.detail-subtitle {
+  margin: 6px 0 22px;
+  color: #6e7696;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.detail-item {
+  background: #f8f9ff;
+  border: 1px solid #e8eaf7;
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-label {
+  color: #6c7498;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 .modal-backdrop {
@@ -250,5 +349,22 @@
   .hero-card {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .detail-panel {
+    grid-template-columns: 1fr;
+    height: min(86vh, 720px);
+  }
+
+  .detail-cover-column {
+    height: 260px;
+  }
+
+  .detail-info-column {
+    padding: 20px;
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr;
   }
 }

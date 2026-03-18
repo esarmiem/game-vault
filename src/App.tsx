@@ -33,6 +33,7 @@ function App() {
   const [isSaving, setIsSaving] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [showModal, setShowModal] = useState(false)
+  const [selectedGame, setSelectedGame] = useState<Game | null>(null)
   const [form, setForm] = useState<FormState>(initialForm)
   const [igdbResults, setIgdbResults] = useState<IgdbSuggestion[]>([])
   const [isSearchingIgdb, setIsSearchingIgdb] = useState(false)
@@ -112,6 +113,10 @@ function App() {
     setIgdbResults([])
     setIgdbError('')
     setShowModal(true)
+  }
+
+  function closeDetail() {
+    setSelectedGame(null)
   }
 
   async function submitNewGame(event: FormEvent) {
@@ -196,7 +201,7 @@ function App() {
                 </tr>
               ) : null}
               {visibleGames.map((game) => (
-                <tr key={game.id}>
+                <tr key={game.id} onClick={() => setSelectedGame(game)} className="game-row">
                   <td>
                     {game.cover_url ? (
                       <img src={game.cover_url} alt={game.title} className="cover-thumb" />
@@ -216,7 +221,10 @@ function App() {
                     <div className="delete-action">
                       <button
                         className="btn btn-sm btn-delete"
-                        onClick={() => handleDelete(game.id)}
+                        onClick={(event) => {
+                          event.stopPropagation()
+                          handleDelete(game.id)
+                        }}
                       >
                         x
                       </button>
@@ -229,6 +237,58 @@ function App() {
           </table>
         </div>
       </section>
+
+      {selectedGame ? (
+        <div className="detail-backdrop" onClick={closeDetail}>
+          <section className="detail-panel" onClick={(event) => event.stopPropagation()}>
+            <button className="btn btn-sm btn-outline-secondary detail-close" onClick={closeDetail}>
+              Cerrar
+            </button>
+
+            <div className="detail-cover-column">
+              {selectedGame.cover_url ? (
+                <img src={selectedGame.cover_url} alt={selectedGame.title} className="detail-cover-image" />
+              ) : (
+                <div className="detail-cover-empty">Sin carátula</div>
+              )}
+            </div>
+
+            <div className="detail-info-column">
+              <h2 className="detail-title">{selectedGame.title}</h2>
+              <p className="detail-subtitle">Detalle del juego</p>
+
+              <div className="detail-grid">
+                <div className="detail-item">
+                  <span className="detail-label">Plataforma</span>
+                  <strong>{selectedGame.platform || '-'}</strong>
+                </div>
+                <div className="detail-item">
+                  <span className="detail-label">Género</span>
+                  <strong>{selectedGame.genre || '-'}</strong>
+                </div>
+                <div className="detail-item">
+                  <span className="detail-label">Año</span>
+                  <strong>{selectedGame.release_year || '-'}</strong>
+                </div>
+                <div className="detail-item">
+                  <span className="detail-label">Metacritic</span>
+                  <strong>{selectedGame.metacritic || '-'}</strong>
+                </div>
+                <div className="detail-item">
+                  <span className="detail-label">Calificación</span>
+                  <strong>
+                    <Stars value={selectedGame.rating} />
+                  </strong>
+                </div>
+                <div className="detail-item">
+                  <span className="detail-label">IGDB ID</span>
+                  <strong>{selectedGame.igdb_id || '-'}</strong>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      ) : null}
 
       {showModal ? (
         <div className="modal-backdrop">
