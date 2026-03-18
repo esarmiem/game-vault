@@ -1,8 +1,12 @@
-# Game Vault
+<div align="center">
+  <h1>Game Vault</h1>
+  <img width="200" height="200" alt="logogv" src="https://github.com/user-attachments/assets/816a25c3-1e05-4729-beb5-7cdbcb8c7c02" />
+</div>
 
-Aplicación de escritorio multiplataforma para gestionar tu biblioteca de juegos con almacenamiento local.
-<img width="1226" height="838" alt="image" src="https://github.com/user-attachments/assets/08c362e4-fb07-4c0b-ae19-d6ca0c729923" />
 
+#### Aplicación de escritorio multiplataforma para gestionar tu biblioteca de juegos con almacenamiento local.
+
+<img width="800" height="600" alt="image" src="https://github.com/user-attachments/assets/08c362e4-fb07-4c0b-ae19-d6ca0c729923" />
 
 ## Stack
 
