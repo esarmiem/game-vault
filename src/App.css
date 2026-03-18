@@ -147,6 +147,12 @@
   color: #6f7494;
 }
 
+.igdb-error {
+  margin-top: 6px;
+  font-size: 0.78rem;
+  color: #c43f62;
+}
+
 .igdb-dropdown {
   position: absolute;
   left: 0;

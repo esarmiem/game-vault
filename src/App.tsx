@@ -36,6 +36,7 @@ function App() {
   const [form, setForm] = useState<FormState>(initialForm)
   const [igdbResults, setIgdbResults] = useState<IgdbSuggestion[]>([])
   const [isSearchingIgdb, setIsSearchingIgdb] = useState(false)
+  const [igdbError, setIgdbError] = useState('')
 
   async function loadGames(currentSearch: string) {
     setIsLoading(true)
@@ -68,16 +69,19 @@ function App() {
     const term = form.title.trim()
     if (term.length < 2) {
       setIgdbResults([])
+      setIgdbError('')
       return
     }
 
     const timer = window.setTimeout(async () => {
       setIsSearchingIgdb(true)
+      setIgdbError('')
       try {
         const results = await searchIgdb(term)
         setIgdbResults(results)
-      } catch {
+      } catch (error) {
         setIgdbResults([])
+        setIgdbError(String(error))
       } finally {
         setIsSearchingIgdb(false)
       }
@@ -100,11 +104,13 @@ function App() {
       igdb_id: game.igdb_id,
     }))
     setIgdbResults([])
+    setIgdbError('')
   }
 
   function openModal() {
     setForm(initialForm)
     setIgdbResults([])
+    setIgdbError('')
     setShowModal(true)
   }
 
@@ -243,6 +249,7 @@ function App() {
                   }
                 />
                 {isSearchingIgdb ? <span className="igdb-status">Buscando en IGDB…</span> : null}
+                {igdbError ? <div className="igdb-error">{igdbError}</div> : null}
                 {igdbResults.length > 0 ? (
                   <div className="igdb-dropdown">
                     {igdbResults.map((result) => (

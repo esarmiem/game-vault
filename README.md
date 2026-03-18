@@ -11,18 +11,6 @@ Aplicación de escritorio multiplataforma para gestionar tu biblioteca de juegos
 - SQLite (archivo local por usuario)
 - IGDB API para autocomplete
 
-## Variables de entorno
-
-1. Copia `.env.example` a `.env`.
-2. Completa:
-
-```bash
-IGDB_CLIENT_ID=tu_client_id
-IGDB_CLIENT_SECRET=tu_client_secret
-```
-
-`IGDB_CLIENT_SECRET` se usa únicamente en el backend de Tauri.
-
 ## Desarrollo
 
 ```bash
@@ -46,3 +34,12 @@ Genera instaladores para el sistema operativo actual.
 - Calificación visual en estrellas de 1 a 5.
 - Visualización de carátula.
 - Autocompletado desde IGDB por nombre del juego.
+
+## Variables de entorno (nota)
+
+El build incluye credenciales IGDB embebidas para usar la app instalada sin configuración manual.
+
+Si quieres sobrescribir esas credenciales (opcional), puedes usar variables de entorno en desarrollo o crear:
+
+- `~/Library/Application Support/com.alaskatech.gamevault/.env`
+- `~/.game-vault.env`

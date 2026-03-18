@@ -1,9 +1,13 @@
 use reqwest::blocking::Client;
 use rusqlite::{params, Connection};
 use serde::{Deserialize, Serialize};
+use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 use std::time::{Duration, Instant};
 use tauri::Manager;
+
+const EMBEDDED_IGDB_CLIENT_ID: &str = "h5z2ruq3jdwnrulwfzyshde3col3te";
+const EMBEDDED_IGDB_CLIENT_SECRET: &str = "u371665lqbnpkwqeubna71kzq5otwb";
 
 struct AppState {
   db: Mutex<Connection>,
@@ -151,11 +155,37 @@ fn release_year_from_unix(value: Option<i64>) -> Option<i64> {
   })
 }
 
-fn get_igdb_token(state: &AppState) -> Result<String, String> {
+fn load_environment_files(app_dir: &Path) {
+  dotenvy::dotenv().ok();
+
+  let local_app_env = app_dir.join(".env");
+  if local_app_env.exists() {
+    let _ = dotenvy::from_path_override(local_app_env);
+  }
+
+  if let Ok(home) = std::env::var("HOME") {
+    let user_env = PathBuf::from(home).join(".game-vault.env");
+    if user_env.exists() {
+      let _ = dotenvy::from_path_override(user_env);
+    }
+  }
+}
+
+fn get_igdb_credentials() -> (String, String) {
   let client_id = std::env::var("IGDB_CLIENT_ID")
-    .map_err(|_| "Falta la variable IGDB_CLIENT_ID".to_string())?;
+    .ok()
+    .filter(|value| !value.trim().is_empty())
+    .unwrap_or_else(|| EMBEDDED_IGDB_CLIENT_ID.to_string());
   let client_secret = std::env::var("IGDB_CLIENT_SECRET")
-    .map_err(|_| "Falta la variable IGDB_CLIENT_SECRET".to_string())?;
+    .ok()
+    .filter(|value| !value.trim().is_empty())
+    .unwrap_or_else(|| EMBEDDED_IGDB_CLIENT_SECRET.to_string());
+
+  (client_id, client_secret)
+}
+
+fn get_igdb_token(state: &AppState) -> Result<String, String> {
+  let (client_id, client_secret) = get_igdb_credentials();
 
   {
     let cached = state
@@ -328,8 +358,7 @@ fn search_igdb(state: tauri::State<'_, AppState>, query: String) -> Result<Vec<I
     return Ok(Vec::new());
   }
 
-  let client_id = std::env::var("IGDB_CLIENT_ID")
-    .map_err(|_| "Falta la variable IGDB_CLIENT_ID".to_string())?;
+  let (client_id, _) = get_igdb_credentials();
   let token = get_igdb_token(&state)?;
   let body = format!(
     "search \"{}\"; fields name,cover.url,platforms.name,genres.name,first_release_date,aggregated_rating; limit 8;",
@@ -386,8 +415,6 @@ fn search_igdb(state: tauri::State<'_, AppState>, query: String) -> Result<Vec<I
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-  dotenvy::dotenv().ok();
-
   tauri::Builder::default()
     .setup(|app| {
       if cfg!(debug_assertions) {
@@ -404,6 +431,7 @@ pub fn run() {
         .map_err(|error| format!("No se pudo resolver el directorio de datos: {error}"))?;
       std::fs::create_dir_all(&app_dir)
         .map_err(|error| format!("No se pudo crear el directorio de datos: {error}"))?;
+      load_environment_files(&app_dir);
       let db_path = app_dir.join("game_vault.sqlite");
 
       let connection = Connection::open(db_path)
