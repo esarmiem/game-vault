@@ -68,7 +68,7 @@ function App() {
       return
     }
     const term = form.title.trim()
-    if (term.length < 2) {
+    if (term.length < 2 || form.igdb_id !== null) {
       setIgdbResults([])
       setIgdbError('')
       return
@@ -89,7 +89,7 @@ function App() {
     }, 350)
 
     return () => window.clearTimeout(timer)
-  }, [form.title, showModal])
+  }, [form.title, form.igdb_id, showModal])
 
   const visibleGames = useMemo(() => games, [games])
 
