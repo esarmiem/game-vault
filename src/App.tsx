@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
 import { addGame, getGames, removeGame, searchIgdb } from './api'
 import type { Game, IgdbSuggestion, NewGamePayload } from './types'
+import { Pagination } from './Pagination'
 import logoGv from './assets/logogv.png'
 import './App.css'
 
@@ -39,6 +40,7 @@ function App() {
   const [igdbResults, setIgdbResults] = useState<IgdbSuggestion[]>([])
   const [isSearchingIgdb, setIsSearchingIgdb] = useState(false)
   const [igdbError, setIgdbError] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
 
   async function loadGames(currentSearch: string) {
     setIsLoading(true)
@@ -58,6 +60,7 @@ function App() {
   }, [])
 
   useEffect(() => {
+    setCurrentPage(1)
     const timer = window.setTimeout(() => {
       loadGames(search)
     }, 220)
@@ -93,6 +96,19 @@ function App() {
   }, [form.title, form.igdb_id, showModal])
 
   const visibleGames = useMemo(() => games, [games])
+
+  const ITEMS_PER_PAGE = 10
+  const totalPages = Math.ceil(visibleGames.length / ITEMS_PER_PAGE)
+
+  useEffect(() => {
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(totalPages)
+    }
+  }, [totalPages, currentPage])
+
+  const paginatedGames = useMemo(() => {
+    return visibleGames.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE)
+  }, [visibleGames, currentPage])
 
   function applySuggestion(game: IgdbSuggestion) {
     setForm((previous) => ({
@@ -204,7 +220,7 @@ function App() {
                   </td>
                 </tr>
               ) : null}
-              {visibleGames.map((game) => (
+              {paginatedGames.map((game) => (
                 <tr key={game.id} onClick={() => setSelectedGame(game)} className="game-row">
                   <td>
                     {game.cover_url ? (
@@ -241,6 +257,14 @@ function App() {
           </table>
         </div>
       </section>
+
+      {visibleGames.length > 10 ? (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
+      ) : null}
 
       {selectedGame ? (
         <div className="detail-backdrop" onClick={closeDetail}>
