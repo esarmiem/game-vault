@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
 import { addGame, getGames, removeGame, searchIgdb } from './api'
 import type { Game, IgdbSuggestion, NewGamePayload } from './types'
+import logoGv from './assets/logogv.png'
 import './App.css'
 
 type FormState = {
@@ -157,9 +158,12 @@ function App() {
   return (
     <main className="app-shell container-fluid">
       <section className="hero-card">
-        <div>
-          <h1>Game Vault</h1>
-          <p className="subtitle">Lleva control de tus juegos terminados y dales tu rating.</p>
+        <div className="d-flex align-items-center gap-3">
+          <img src={logoGv} alt="Game Vault Logo" className="app-logo" />
+          <div>
+            <h1>Game Vault</h1>
+            <p className="subtitle">Lleva control de tus juegos terminados y dales tu rating.</p>
+          </div>
         </div>
         <button className="btn btn-accent" onClick={openModal}>
           + Agregar juego

@@ -22,6 +22,13 @@
   color: #fff;
 }
 
+.app-logo {
+  max-height: 64px;
+  width: auto;
+  object-fit: contain;
+  border-radius: 12px;
+}
+
 .subtitle {
   margin: 4px 0 0;
   color: rgba(255, 255, 255, 0.92);
