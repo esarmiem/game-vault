@@ -97,6 +97,66 @@ struct IgdbPlatformLogo {
   url: Option<String>,
 }
 
+#[derive(Debug, Serialize)]
+struct IgdbGameDetails {
+  artworks: Vec<String>,
+  screenshots: Vec<String>,
+  videos: Vec<String>,
+  developer: Option<String>,
+  languages: Vec<String>,
+  multiplayer: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+struct IgdbDetailsRaw {
+  artworks: Option<Vec<IgdbArtwork>>,
+  screenshots: Option<Vec<IgdbArtwork>>,
+  videos: Option<Vec<IgdbVideo>>,
+  involved_companies: Option<Vec<IgdbInvolvedCompany>>,
+  language_supports: Option<Vec<IgdbLanguageSupport>>,
+  multiplayer_modes: Option<Vec<IgdbMultiplayerMode>>,
+}
+
+#[derive(Debug, Deserialize)]
+struct IgdbArtwork {
+  url: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+struct IgdbVideo {
+  video_id: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+struct IgdbInvolvedCompany {
+  developer: Option<bool>,
+  company: Option<IgdbCompany>,
+}
+
+#[derive(Debug, Deserialize)]
+struct IgdbCompany {
+  name: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct IgdbLanguageSupport {
+  language: Option<IgdbLanguage>,
+}
+
+#[derive(Debug, Deserialize)]
+struct IgdbLanguage {
+  name: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct IgdbMultiplayerMode {
+  campaigncoop: Option<bool>,
+  lancoop: Option<bool>,
+  offlinecoop: Option<bool>,
+  onlinecoop: Option<bool>,
+  splitscreen: Option<bool>,
+}
+
 #[derive(Debug, Deserialize)]
 struct IgdbName {
   name: String,
@@ -459,6 +519,103 @@ fn search_igdb(state: tauri::State<'_, AppState>, query: String) -> Result<Vec<I
   Ok(suggestions)
 }
 
+#[tauri::command]
+fn get_igdb_game_details(state: tauri::State<'_, AppState>, igdb_id: i64) -> Result<IgdbGameDetails, String> {
+  let (client_id, _) = get_igdb_credentials();
+  let token = get_igdb_token(&state)?;
+  let body = format!(
+    "fields artworks.url, screenshots.url, videos.video_id, involved_companies.developer, involved_companies.company.name, language_supports.language.name, multiplayer_modes.campaigncoop, multiplayer_modes.lancoop, multiplayer_modes.offlinecoop, multiplayer_modes.onlinecoop, multiplayer_modes.splitscreen; where id = {};",
+    igdb_id
+  );
+
+  let client = Client::new();
+  let response = client
+    .post("https://api.igdb.com/v4/games")
+    .header("Client-ID", client_id)
+    .header("Authorization", format!("Bearer {token}"))
+    .header("Accept", "application/json")
+    .body(body)
+    .send()
+    .map_err(|error| format!("No se pudo consultar detalles en IGDB: {error}"))?;
+
+  if !response.status().is_success() {
+    return Err(format!("IGDB devolvió un error: código {}", response.status()));
+  }
+
+  let raw_items: Vec<IgdbDetailsRaw> = response
+    .json()
+    .map_err(|error| format!("No se pudo leer la respuesta de detalles de IGDB: {error}"))?;
+
+  let item = match raw_items.into_iter().next() {
+    Some(i) => i,
+    None => return Err("No se encontró el juego en IGDB".to_string()),
+  };
+
+  let artworks = item
+    .artworks
+    .unwrap_or_default()
+    .into_iter()
+    .filter_map(|a| normalize_cover_url(a.url))
+    .map(|url| url.replace("t_cover_big", "t_1080p"))
+    .collect();
+
+  let screenshots = item
+    .screenshots
+    .unwrap_or_default()
+    .into_iter()
+    .filter_map(|s| normalize_cover_url(s.url))
+    .map(|url| url.replace("t_cover_big", "t_1080p"))
+    .collect();
+
+  let videos = item
+    .videos
+    .unwrap_or_default()
+    .into_iter()
+    .filter_map(|v| v.video_id)
+    .collect();
+
+  let developer = item.involved_companies.and_then(|comps| {
+    comps.into_iter().find(|c| c.developer.unwrap_or(false)).and_then(|c| c.company).map(|c| c.name)
+  });
+
+  let mut languages = item
+    .language_supports
+    .unwrap_or_default()
+    .into_iter()
+    .filter_map(|ls| ls.language.map(|l| l.name))
+    .collect::<Vec<_>>();
+  languages.sort();
+  languages.dedup();
+
+  let multiplayer = item.multiplayer_modes.and_then(|modes| {
+    if let Some(m) = modes.into_iter().next() {
+      let mut features = Vec::new();
+      if m.campaigncoop.unwrap_or(false) { features.push("Co-op de Campaña"); }
+      if m.lancoop.unwrap_or(false) { features.push("Co-op LAN"); }
+      if m.offlinecoop.unwrap_or(false) { features.push("Co-op Offline"); }
+      if m.onlinecoop.unwrap_or(false) { features.push("Co-op Online"); }
+      if m.splitscreen.unwrap_or(false) { features.push("Pantalla Dividida"); }
+      
+      if features.is_empty() {
+        Some("Single Player".to_string())
+      } else {
+        Some(features.join(", "))
+      }
+    } else {
+      Some("Single Player".to_string())
+    }
+  });
+
+  Ok(IgdbGameDetails {
+    artworks,
+    screenshots,
+    videos,
+    developer,
+    languages,
+    multiplayer,
+  })
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   tauri::Builder::default()
@@ -495,7 +652,8 @@ pub fn run() {
       list_games,
       create_game,
       delete_game,
-      search_igdb
+      search_igdb,
+      get_igdb_game_details
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

@@ -3,6 +3,7 @@ import type { FormEvent } from 'react'
 import { addGame, getGames, removeGame, searchIgdb } from './api'
 import type { Game, IgdbSuggestion, NewGamePayload } from './types'
 import { Pagination } from './Pagination'
+import { GameDetail } from './components/GameDetail'
 import logoGv from './assets/logogv.png'
 import './App.css'
 
@@ -178,7 +179,7 @@ function App() {
   return (
     <main className="app-shell container-fluid">
       <section className="hero-card">
-        <div className="d-flex align-items-center gap-3">
+        <div className="hero-card-content">
           <img src={logoGv} alt="Game Vault Logo" className="app-logo" />
           <div>
             <h1>Game Vault</h1>
@@ -201,7 +202,7 @@ function App() {
 
       {errorMessage ? <div className="alert alert-danger">{errorMessage}</div> : null}
 
-      <section className="table-card">
+      <section className="table-card desktop-only">
         <div className="table-responsive game-list-scroll">
           <table className="table table-hover align-middle game-table">
             <thead>
@@ -278,6 +279,64 @@ function App() {
         </div>
       </section>
 
+      <section className="mobile-only mobile-grid">
+        {!isLoading && visibleGames.length === 0 ? (
+          <div className="empty-cell">
+            Aún no hay juegos. Agrega el primero con el botón superior.
+          </div>
+        ) : null}
+        {paginatedGames.map((game) => (
+          <div key={game.id} className="mobile-game-card" onClick={() => setSelectedGame(game)}>
+            <div className="mobile-cover-wrapper">
+              {game.cover_url ? (
+                <img src={game.cover_url} alt={game.title} className="mobile-cover" />
+              ) : (
+                <div className="mobile-cover-placeholder">Sin imagen</div>
+              )}
+              {game.metacritic ? (
+                <div className="mobile-metacritic-badge">{game.metacritic}</div>
+              ) : null}
+            </div>
+            
+            <div className="mobile-card-content">
+              <div className="mobile-card-header">
+                <h3 className="mobile-title">{game.title}</h3>
+                <div className="mobile-delete-wrapper">
+                  <button
+                    className="mobile-delete-btn"
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      handleDelete(game.id)
+                    }}
+                  >
+                    <span className="material-symbols-outlined">more_vert</span>
+                  </button>
+                </div>
+              </div>
+              
+              <div className="mobile-platform-row">
+                {game.platform_logo_url ? (
+                  <div className="mobile-platform-logo-wrapper">
+                    <img 
+                      src={game.platform_logo_url.split(',')[0]} 
+                      alt={game.platform ? game.platform.split(', ')[0] : ''} 
+                      className="mobile-platform-logo" 
+                    />
+                    <span className="mobile-platform-text">{game.platform ? game.platform.split(', ')[0] : ''}</span>
+                  </div>
+                ) : (
+                  <span className="mobile-platform-text">{game.platform ? game.platform.split(', ')[0] : '-'}</span>
+                )}
+              </div>
+              
+              <div className="mobile-rating">
+                <Stars value={game.rating} />
+              </div>
+            </div>
+          </div>
+        ))}
+      </section>
+
       {visibleGames.length > 10 ? (
         <Pagination
           currentPage={currentPage}
@@ -287,55 +346,7 @@ function App() {
       ) : null}
 
       {selectedGame ? (
-        <div className="detail-backdrop" onClick={closeDetail}>
-          <section className="detail-panel" onClick={(event) => event.stopPropagation()}>
-            <button className="btn btn-sm btn-outline-secondary detail-close" onClick={closeDetail}>
-              Cerrar
-            </button>
-
-            <div className="detail-cover-column">
-              {selectedGame.cover_url ? (
-                <img src={selectedGame.cover_url} alt={selectedGame.title} className="detail-cover-image" />
-              ) : (
-                <div className="detail-cover-empty">Sin carátula</div>
-              )}
-            </div>
-
-            <div className="detail-info-column">
-              <h2 className="detail-title">{selectedGame.title}</h2>
-              <p className="detail-subtitle">Detalle del juego</p>
-
-              <div className="detail-grid">
-                <div className="detail-item">
-                  <span className="detail-label">Plataforma</span>
-                  <strong>{selectedGame.platform || '-'}</strong>
-                </div>
-                <div className="detail-item">
-                  <span className="detail-label">Género</span>
-                  <strong>{selectedGame.genre || '-'}</strong>
-                </div>
-                <div className="detail-item">
-                  <span className="detail-label">Año</span>
-                  <strong>{selectedGame.release_year || '-'}</strong>
-                </div>
-                <div className="detail-item">
-                  <span className="detail-label">Metacritic</span>
-                  <strong>{selectedGame.metacritic || '-'}</strong>
-                </div>
-                <div className="detail-item">
-                  <span className="detail-label">Calificación</span>
-                  <strong>
-                    <Stars value={selectedGame.rating} />
-                  </strong>
-                </div>
-                <div className="detail-item">
-                  <span className="detail-label">IGDB ID</span>
-                  <strong>{selectedGame.igdb_id || '-'}</strong>
-                </div>
-              </div>
-            </div>
-          </section>
-        </div>
+        <GameDetail game={selectedGame} onClose={closeDetail} />
       ) : null}
 
       {showModal ? (

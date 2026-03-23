@@ -33,3 +33,12 @@ export type IgdbSuggestion = {
   release_year: number | null
   metacritic: number | null
 }
+
+export type IgdbGameDetails = {
+  artworks: string[]
+  screenshots: string[]
+  videos: string[]
+  developer: string | null
+  languages: string[]
+  multiplayer: string | null
+}

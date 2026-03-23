@@ -1,0 +1,2351 @@
+{
+  "info": {
+    "_postman_id": "4367eb1d-3f6b-41ee-96cb-3ccb3d094a5c",
+    "name": "IGDB API",
+    "description": "All endpoints from the IGDB API as outlined in the [documentation](https://api-docs.igdb.com/?javascript#endpoints).\n\n## Getting started\n\n- Fork this collection on your own account\n    \n- Select the pinned `IGDB` environment\n    \n- Copy your Twitch client ID and secret to the `twitch_client_id` and `twitch_client_secret` environment variables, respectively; if you don't have credentials, you can obtain them by [registering an application](https://dev.twitch.tv/console/apps/create)\n    \n- [Get an access token](https://www.postman.com/aceprosports/workspace/public/request/18853756-e073c768-7649-4baf-9dcb-d4e747a8556d) and copy it to the `twitch_access_token` environment variable\n    \n\n_Ensure you set the_ _**current value**_ _for all environment variables._\n<br />\nYou should now be able to access all the endpoints!",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "27998826",
+    "_collection_link": "https://go.postman.co/collection/18853756-4367eb1d-3f6b-41ee-96cb-3ccb3d094a5c?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Get access token",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "https://id.twitch.tv/oauth2/token?client_id={{twitch_client_id}}&client_secret={{twitch_client_secret}}&grant_type=client_credentials",
+          "protocol": "https",
+          "host": [
+            "id",
+            "twitch",
+            "tv"
+          ],
+          "path": [
+            "oauth2",
+            "token"
+          ],
+          "query": [
+            {
+              "key": "client_id",
+              "value": "{{twitch_client_id}}",
+              "description": "Your Twitch client ID."
+            },
+            {
+              "key": "client_secret",
+              "value": "{{twitch_client_secret}}",
+              "description": "Your Twitch client secret."
+            },
+            {
+              "key": "grant_type",
+              "value": "client_credentials"
+            }
+          ]
+        },
+        "description": "Be sure to copy your access token from the response body to the `twitch_access_token` environment variable in order to successfully access all the endpoints."
+      },
+      "response": []
+    },
+    {
+      "name": "Age Ratings",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields category,checksum,content_descriptions,rating,rating_cover_url,synopsis;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/age_ratings",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "age_ratings"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Age Rating Content Descriptions",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields category,checksum,description;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/age_rating_content_descriptions",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "age_rating_content_descriptions"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Alternative Names",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields checksum,comment,game,name;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/alternative_names",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "alternative_names"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Artwork",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields alpha_channel,animated,checksum,game,height,image_id,url,width;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/artworks",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "artworks"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Characters",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields akas,checksum,country_name,created_at,description,games,gender,mug_shot,name,slug,species,updated_at,url;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/characters",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "characters"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Character Mug Shots",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields alpha_channel,animated,checksum,height,image_id,url,width;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/character_mug_shots",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "character_mug_shots"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Collections",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields as_child_relations,as_parent_relations,checksum,created_at,games,name,slug,type,updated_at,url;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/collections",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "collections"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Collection Memberships",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields checksum,collection,created_at,game,type,updated_at;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/collection_memberships",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "collection_memberships"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Collection Membership Types",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields allowed_collection_type,checksum,created_at,description,name,updated_at;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/collection_membership_types",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "collection_membership_types"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Collection Relations",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields checksum,child_collection,created_at,parent_collection,type,updated_at;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/collection_relations",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "collection_relations"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Collection Relation Types",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields allowed_child_type,allowed_parent_type,checksum,created_at,description,name,updated_at;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/collection_relation_types",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "collection_relation_types"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Collection Types",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields checksum,created_at,description,name,updated_at;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/collection_types",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "collection_types"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Companies",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields change_date,change_date_category,changed_company_id,checksum,country,created_at,description,developed,logo,name,parent,published,slug,start_date,start_date_category,updated_at,url,websites;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/companies",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "companies"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Company Logos",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields alpha_channel,animated,checksum,height,image_id,url,width;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/company_logos",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "company_logos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Company Websites",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields category,checksum,trusted,url;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/company_websites",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "company_websites"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Covers",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields alpha_channel,animated,checksum,game,game_localization,height,image_id,url,width;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/covers",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "covers"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Events",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields checksum,created_at,description,end_time,event_logo,event_networks,games,live_stream_url,name,slug,start_time,time_zone,updated_at,videos;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/events",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "events"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Event Logos",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields alpha_channel,animated,checksum,created_at,event,height,image_id,updated_at,url,width;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/event_logos",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "event_logos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Event Networks",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields checksum,created_at,event,network_type,updated_at,url;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/event_networks",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "event_networks"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "External Games",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields category,checksum,countries,created_at,game,media,name,platform,uid,updated_at,url,year;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/external_games",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "external_games"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Franchises",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields checksum,created_at,games,name,slug,updated_at,url;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/franchises",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "franchises"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Games",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields age_ratings,aggregated_rating,aggregated_rating_count,alternative_names,artworks,bundles,category,checksum,collection,collections,cover,created_at,dlcs,expanded_games,expansions,external_games,first_release_date,follows,forks,franchise,franchises,game_engines,game_localizations,game_modes,genres,hypes,involved_companies,keywords,language_supports,multiplayer_modes,name,parent_game,platforms,player_perspectives,ports,rating,rating_count,release_dates,remakes,remasters,screenshots,similar_games,slug,standalone_expansions,status,storyline,summary,tags,themes,total_rating,total_rating_count,updated_at,url,version_parent,version_title,videos,websites;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/games",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "games"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Game Engines",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields checksum,companies,created_at,description,logo,name,platforms,slug,updated_at,url;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/game_engines",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "game_engines"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Game Engine Logos",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields alpha_channel,animated,checksum,height,image_id,url,width;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/game_engine_logos",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "game_engine_logos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Game Localizations",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields checksum,cover,created_at,game,name,region,updated_at;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/game_localizations",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "game_localizations"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Game Modes",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields checksum,created_at,name,slug,updated_at,url;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/game_modes",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "game_modes"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Game Versions",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields checksum,created_at,features,game,games,updated_at,url;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/game_versions",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "game_versions"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Game Version Features",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields category,checksum,description,position,title,values;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/game_version_features",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "game_version_features"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Game Version Feature Values",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields checksum,game,game_feature,included_feature,note;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/game_version_feature_values",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "game_version_feature_values"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Game Videos",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields checksum,game,name,video_id;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/game_videos",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "game_videos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Genres",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields checksum,created_at,name,slug,updated_at,url;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/genres",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "genres"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Involved Companies",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields checksum,company,created_at,developer,game,porting,publisher,supporting,updated_at;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/involved_companies",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "involved_companies"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Keywords",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields checksum,created_at,name,slug,updated_at,url;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/keywords",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "keywords"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Languages",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields checksum,created_at,locale,name,native_name,updated_at;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/languages",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "languages"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Language Supports",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields checksum,created_at,game,language,language_support_type,updated_at;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/language_supports",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "language_supports"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Language Support Types",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields checksum,created_at,name,updated_at;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/language_support_types",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "language_support_types"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Multiplayer Modes",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields campaigncoop,checksum,dropin,game,lancoop,offlinecoop,offlinecoopmax,offlinemax,onlinecoop,onlinecoopmax,onlinemax,platform,splitscreen,splitscreenonline;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/multiplayer_modes",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "multiplayer_modes"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Network Types",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields checksum,created_at,event_networks,name,updated_at;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/network_types",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "network_types"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Platforms",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields abbreviation,alternative_name,category,checksum,created_at,generation,name,platform_family,platform_logo,slug,summary,updated_at,url,versions,websites;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/platforms",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "platforms"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Platform Families",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields checksum,name,slug;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/platform_families",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "platform_families"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Platform Logos",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields alpha_channel,animated,checksum,height,image_id,url,width;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/platform_logos",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "platform_logos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Platform Versions",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields checksum,companies,connectivity,cpu,graphics,main_manufacturer,media,memory,name,online,os,output,platform_logo,platform_version_release_dates,resolutions,slug,sound,storage,summary,url;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/platform_versions",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "platform_versions"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Platform Version Companies",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields checksum,comment,company,developer,manufacturer;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/platform_version_companies",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "platform_version_companies"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Platform Version Release Dates",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields category,checksum,created_at,date,human,m,platform_version,region,updated_at,y;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/platform_version_release_dates",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "platform_version_release_dates"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Platform Websites",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields category,checksum,trusted,url;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/platform_websites",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "platform_websites"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Player Perspectives",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields checksum,created_at,name,slug,updated_at,url;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/player_perspectives",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "player_perspectives"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Regions",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields category,checksum,created_at,identifier,name,updated_at;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/regions",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "regions"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Release Dates",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields category,checksum,created_at,date,game,human,m,platform,region,status,updated_at,y;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/release_dates",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "release_dates"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Release Date Status",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields checksum,created_at,description,name,updated_at;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/release_date_statuses",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "release_date_statuses"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Screenshots",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields alpha_channel,animated,checksum,game,height,image_id,url,width;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/screenshots",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "screenshots"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Search",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields alternative_name,character,checksum,collection,company,description,game,name,platform,published_at,test_dummy,theme;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/search",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "search"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Themes",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields checksum,created_at,name,slug,updated_at,url;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/themes",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "themes"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Websites",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Client-ID",
+            "value": "{{twitch_client_id}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{twitch_access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "fields category,checksum,game,trusted,url;",
+          "options": {
+            "raw": {
+              "language": "text"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://api.igdb.com/v4/websites",
+          "protocol": "https",
+          "host": [
+            "api",
+            "igdb",
+            "com"
+          ],
+          "path": [
+            "v4",
+            "websites"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ]
+}
