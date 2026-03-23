@@ -15,6 +15,7 @@ type FormState = {
   release_year: string
   metacritic: string
   igdb_id: number | null
+  platform_logo_url: string
 }
 
 const initialForm: FormState = {
@@ -26,6 +27,7 @@ const initialForm: FormState = {
   release_year: '',
   metacritic: '',
   igdb_id: null,
+  platform_logo_url: '',
 }
 
 function App() {
@@ -120,6 +122,7 @@ function App() {
       release_year: game.release_year ? String(game.release_year) : '',
       metacritic: game.metacritic ? String(game.metacritic) : '',
       igdb_id: game.igdb_id,
+      platform_logo_url: game.platform_logo_url ?? '',
     }))
     setIgdbResults([])
     setIgdbError('')
@@ -149,6 +152,7 @@ function App() {
       release_year: form.release_year ? Number(form.release_year) : null,
       metacritic: form.metacritic ? Number(form.metacritic) : null,
       igdb_id: form.igdb_id,
+      platform_logo_url: form.platform_logo_url.trim() || null,
     }
 
     try {
@@ -230,7 +234,23 @@ function App() {
                     )}
                   </td>
                   <td className="fw-semibold">{game.title}</td>
-                  <td>{game.platform || '-'}</td>
+                  <td>
+                    {game.platform_logo_url ? (
+                      <div className="platform-logos-container">
+                        {game.platform_logo_url.split(',').map((url, i) => {
+                          const pName = game.platform ? game.platform.split(', ')[i] : '';
+                          if (!url) {
+                            return pName ? <span key={i} className="platform-text-fallback" title={pName}>{pName}</span> : null;
+                          }
+                          return (
+                            <img key={i} src={url} alt={pName} className="platform-logo" title={pName} />
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      game.platform || '-'
+                    )}
+                  </td>
                   <td>{game.genre || '-'}</td>
                   <td>{game.release_year || '-'}</td>
                   <td>{game.metacritic || '-'}</td>

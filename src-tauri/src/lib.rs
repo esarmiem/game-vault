@@ -30,6 +30,7 @@ struct Game {
   release_year: Option<i64>,
   metacritic: Option<i64>,
   igdb_id: Option<i64>,
+  platform_logo_url: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -42,6 +43,7 @@ struct NewGamePayload {
   release_year: Option<i64>,
   metacritic: Option<i64>,
   igdb_id: Option<i64>,
+  platform_logo_url: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -50,6 +52,7 @@ struct IgdbSuggestion {
   title: String,
   cover_url: Option<String>,
   platforms: Vec<String>,
+  platform_logo_url: Option<String>,
   genres: Vec<String>,
   release_year: Option<i64>,
   metacritic: Option<i64>,
@@ -72,7 +75,7 @@ struct IgdbRawItem {
   id: i64,
   name: String,
   cover: Option<IgdbCover>,
-  platforms: Option<Vec<IgdbName>>,
+  platforms: Option<Vec<IgdbPlatform>>,
   genres: Option<Vec<IgdbName>>,
   first_release_date: Option<i64>,
   aggregated_rating: Option<f64>,
@@ -80,6 +83,17 @@ struct IgdbRawItem {
 
 #[derive(Debug, Deserialize)]
 struct IgdbCover {
+  url: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+struct IgdbPlatform {
+  name: String,
+  platform_logo: Option<IgdbPlatformLogo>,
+}
+
+#[derive(Debug, Deserialize)]
+struct IgdbPlatformLogo {
   url: Option<String>,
 }
 
@@ -111,10 +125,16 @@ fn setup_database(conn: &Connection) -> Result<(), String> {
       "#,
     )
     .map_err(|error| format!("No se pudo crear la base de datos: {error}"))?;
+
+  // Añadir columna platform_logo_url si no existe
+  let _ = conn.execute("ALTER TABLE games ADD COLUMN platform_logo_url TEXT", []);
+
   Ok(())
 }
 
 fn map_game_row(row: &rusqlite::Row<'_>) -> Result<Game, rusqlite::Error> {
+  // Manejar el caso donde la columna platform_logo_url no fue retornada o es nula
+  // Es más seguro obtener por índice, asumiendo que hemos actualizado todas las consultas.
   Ok(Game {
     id: row.get(0)?,
     title: row.get(1)?,
@@ -125,6 +145,7 @@ fn map_game_row(row: &rusqlite::Row<'_>) -> Result<Game, rusqlite::Error> {
     release_year: row.get(6)?,
     metacritic: row.get(7)?,
     igdb_id: row.get(8)?,
+    platform_logo_url: row.get(9)?,
   })
 }
 
@@ -250,7 +271,7 @@ fn list_games(state: tauri::State<'_, AppState>, search: Option<String>) -> Resu
     let mut statement = conn
       .prepare(
         r#"
-        SELECT id, title, platform, rating, cover_url, genre, release_year, metacritic, igdb_id
+        SELECT id, title, platform, rating, cover_url, genre, release_year, metacritic, igdb_id, platform_logo_url
         FROM games
         ORDER BY title ASC
         "#,
@@ -269,7 +290,7 @@ fn list_games(state: tauri::State<'_, AppState>, search: Option<String>) -> Resu
   let mut statement = conn
     .prepare(
       r#"
-      SELECT id, title, platform, rating, cover_url, genre, release_year, metacritic, igdb_id
+      SELECT id, title, platform, rating, cover_url, genre, release_year, metacritic, igdb_id, platform_logo_url
       FROM games
       WHERE lower(title) LIKE ?1 OR lower(platform) LIKE ?1
       ORDER BY title ASC
@@ -301,8 +322,8 @@ fn create_game(state: tauri::State<'_, AppState>, payload: NewGamePayload) -> Re
   conn
     .execute(
       r#"
-      INSERT INTO games (title, platform, rating, cover_url, genre, release_year, metacritic, igdb_id, updated_at)
-      VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, CURRENT_TIMESTAMP)
+      INSERT INTO games (title, platform, rating, cover_url, genre, release_year, metacritic, igdb_id, platform_logo_url, updated_at)
+      VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, CURRENT_TIMESTAMP)
       "#,
       params![
         payload.title.trim(),
@@ -312,7 +333,8 @@ fn create_game(state: tauri::State<'_, AppState>, payload: NewGamePayload) -> Re
         payload.genre,
         payload.release_year,
         payload.metacritic,
-        payload.igdb_id
+        payload.igdb_id,
+        payload.platform_logo_url
       ],
     )
     .map_err(|error| format!("No se pudo guardar el juego: {error}"))?;
@@ -321,7 +343,7 @@ fn create_game(state: tauri::State<'_, AppState>, payload: NewGamePayload) -> Re
   let mut statement = conn
     .prepare(
       r#"
-      SELECT id, title, platform, rating, cover_url, genre, release_year, metacritic, igdb_id
+      SELECT id, title, platform, rating, cover_url, genre, release_year, metacritic, igdb_id, platform_logo_url
       FROM games
       WHERE id = ?1
       "#,
@@ -361,7 +383,7 @@ fn search_igdb(state: tauri::State<'_, AppState>, query: String) -> Result<Vec<I
   let (client_id, _) = get_igdb_credentials();
   let token = get_igdb_token(&state)?;
   let body = format!(
-    "search \"{}\"; fields name,cover.url,platforms.name,genres.name,first_release_date,aggregated_rating; limit 8;",
+    "search \"{}\"; fields name,cover.url,platforms.name,platforms.platform_logo.url,genres.name,first_release_date,aggregated_rating; limit 8;",
     trimmed.replace('\"', "")
   );
 
@@ -385,28 +407,52 @@ fn search_igdb(state: tauri::State<'_, AppState>, query: String) -> Result<Vec<I
 
   let suggestions = raw_items
     .into_iter()
-    .map(|item| IgdbSuggestion {
-      igdb_id: item.id,
-      title: item.name,
-      cover_url: normalize_cover_url(item.cover.and_then(|cover| cover.url)),
-      platforms: item
-        .platforms
-        .unwrap_or_default()
-        .into_iter()
-        .map(|entry| entry.name)
-        .collect(),
-      genres: item
-        .genres
-        .unwrap_or_default()
-        .into_iter()
-        .map(|entry| entry.name)
-        .collect(),
-      release_year: release_year_from_unix(item.first_release_date),
-      metacritic: item
-        .aggregated_rating
-        .map(|value| value.round())
-        .filter(|value| *value >= 0.0 && *value <= 100.0)
-        .map(|value| value as i64),
+    .map(|item| {
+      let mut platform_names = Vec::new();
+      let mut platform_logos = Vec::new();
+
+      if let Some(platforms) = item.platforms {
+        for p in platforms {
+          platform_names.push(p.name);
+          let mut url_str = String::new();
+          if let Some(logo) = p.platform_logo {
+            if let Some(url) = logo.url {
+              url_str = if url.starts_with("//") {
+                format!("https:{url}")
+              } else {
+                url.clone()
+              };
+            }
+          }
+          platform_logos.push(url_str);
+        }
+      }
+
+      let logo_url = if platform_logos.iter().all(|s| s.is_empty()) {
+        None
+      } else {
+        Some(platform_logos.join(","))
+      };
+
+      IgdbSuggestion {
+        igdb_id: item.id,
+        title: item.name,
+        cover_url: normalize_cover_url(item.cover.and_then(|cover| cover.url)),
+        platforms: platform_names,
+        platform_logo_url: logo_url,
+        genres: item
+          .genres
+          .unwrap_or_default()
+          .into_iter()
+          .map(|entry| entry.name)
+          .collect(),
+        release_year: release_year_from_unix(item.first_release_date),
+        metacritic: item
+          .aggregated_rating
+          .map(|value| value.round())
+          .filter(|value| *value >= 0.0 && *value <= 100.0)
+          .map(|value| value as i64),
+      }
     })
     .collect();
 

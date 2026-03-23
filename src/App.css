@@ -106,6 +106,30 @@
   background: #f2f3fb;
 }
 
+.platform-logos-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  max-width: 250px;
+}
+
+.platform-logo {
+  max-width: 45px;
+  max-height: 20px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.platform-text-fallback {
+  font-size: 0.75rem;
+  color: #667192;
+  background: #f2f3fb;
+  padding: 3px 6px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
 .empty-cell {
   color: #6f7391;
   text-align: center;
