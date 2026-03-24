@@ -8,6 +8,7 @@ export type Game = {
   release_year: number | null
   metacritic: number | null
   igdb_id: number | null
+  platform_logo_url: string | null
 }
 
 export type NewGamePayload = {
@@ -19,6 +20,7 @@ export type NewGamePayload = {
   release_year?: number | null
   metacritic?: number | null
   igdb_id?: number | null
+  platform_logo_url?: string | null
 }
 
 export type IgdbSuggestion = {
@@ -26,7 +28,17 @@ export type IgdbSuggestion = {
   title: string
   cover_url: string | null
   platforms: string[]
+  platform_logo_url: string | null
   genres: string[]
   release_year: number | null
   metacritic: number | null
+}
+
+export type IgdbGameDetails = {
+  artworks: string[]
+  screenshots: string[]
+  videos: string[]
+  developer: string | null
+  languages: string[]
+  multiplayer: string | null
 }

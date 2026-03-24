@@ -3,6 +3,7 @@ import type { FormEvent } from 'react'
 import { addGame, getGames, removeGame, searchIgdb } from './api'
 import type { Game, IgdbSuggestion, NewGamePayload } from './types'
 import { Pagination } from './Pagination'
+import { GameDetail } from './components/GameDetail'
 import logoGv from './assets/logogv.png'
 import './App.css'
 
@@ -15,6 +16,7 @@ type FormState = {
   release_year: string
   metacritic: string
   igdb_id: number | null
+  platform_logo_url: string
 }
 
 const initialForm: FormState = {
@@ -26,12 +28,14 @@ const initialForm: FormState = {
   release_year: '',
   metacritic: '',
   igdb_id: null,
+  platform_logo_url: '',
 }
 
 function App() {
   const [games, setGames] = useState<Game[]>([])
   const [search, setSearch] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list')
   const [isSaving, setIsSaving] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [showModal, setShowModal] = useState(false)
@@ -120,6 +124,7 @@ function App() {
       release_year: game.release_year ? String(game.release_year) : '',
       metacritic: game.metacritic ? String(game.metacritic) : '',
       igdb_id: game.igdb_id,
+      platform_logo_url: game.platform_logo_url ?? '',
     }))
     setIgdbResults([])
     setIgdbError('')
@@ -149,6 +154,7 @@ function App() {
       release_year: form.release_year ? Number(form.release_year) : null,
       metacritic: form.metacritic ? Number(form.metacritic) : null,
       igdb_id: form.igdb_id,
+      platform_logo_url: form.platform_logo_url.trim() || null,
     }
 
     try {
@@ -174,7 +180,7 @@ function App() {
   return (
     <main className="app-shell container-fluid">
       <section className="hero-card">
-        <div className="d-flex align-items-center gap-3">
+        <div className="hero-card-content">
           <img src={logoGv} alt="Game Vault Logo" className="app-logo" />
           <div>
             <h1>Game Vault</h1>
@@ -187,17 +193,35 @@ function App() {
       </section>
 
       <section className="toolbar">
-        <input
-          className="form-control search-input"
-          placeholder="Buscar por nombre o plataforma"
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-        />
+        <div className="toolbar-content">
+          <input
+            className="form-control search-input"
+            placeholder="Buscar por nombre o plataforma"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+          />
+          <div className="view-toggles desktop-only">
+            <button 
+              className={`view-toggle-btn ${viewMode === 'list' ? 'active' : ''}`}
+              onClick={() => setViewMode('list')}
+              title="Vista de lista"
+            >
+              <span className="material-symbols-outlined">view_list</span>
+            </button>
+            <button 
+              className={`view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
+              onClick={() => setViewMode('grid')}
+              title="Vista de cuadrícula"
+            >
+              <span className="material-symbols-outlined">grid_view</span>
+            </button>
+          </div>
+        </div>
       </section>
 
       {errorMessage ? <div className="alert alert-danger">{errorMessage}</div> : null}
 
-      <section className="table-card">
+      <section className={`table-card desktop-only ${viewMode === 'grid' ? 'hidden' : ''}`}>
         <div className="table-responsive game-list-scroll">
           <table className="table table-hover align-middle game-table">
             <thead>
@@ -230,7 +254,23 @@ function App() {
                     )}
                   </td>
                   <td className="fw-semibold">{game.title}</td>
-                  <td>{game.platform || '-'}</td>
+                  <td>
+                    {game.platform_logo_url ? (
+                      <div className="platform-logos-container">
+                        {game.platform_logo_url.split(',').map((url, i) => {
+                          const pName = game.platform ? game.platform.split(', ')[i] : '';
+                          if (!url) {
+                            return pName ? <span key={i} className="platform-text-fallback" title={pName}>{pName}</span> : null;
+                          }
+                          return (
+                            <img key={i} src={url} alt={pName} className="platform-logo" title={pName} />
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      game.platform || '-'
+                    )}
+                  </td>
                   <td>{game.genre || '-'}</td>
                   <td>{game.release_year || '-'}</td>
                   <td>{game.metacritic || '-'}</td>
@@ -258,6 +298,125 @@ function App() {
         </div>
       </section>
 
+      <section className={`desktop-only ${viewMode === 'list' ? 'hidden' : ''}`}>
+        <div className="desktop-grid">
+          {!isLoading && visibleGames.length === 0 ? (
+            <div className="empty-cell" style={{ gridColumn: '1 / -1' }}>
+              Aún no hay juegos. Agrega el primero con el botón superior.
+            </div>
+          ) : null}
+          {paginatedGames.map((game) => (
+            <div key={game.id} className="mobile-game-card desktop-game-card" onClick={() => setSelectedGame(game)}>
+              <div className="mobile-cover-wrapper">
+                {game.cover_url ? (
+                  <img src={game.cover_url} alt={game.title} className="mobile-cover" />
+                ) : (
+                  <div className="mobile-cover-placeholder">Sin imagen</div>
+                )}
+                {game.metacritic ? (
+                  <div className="mobile-metacritic-badge">{game.metacritic}</div>
+                ) : null}
+              </div>
+              
+              <div className="mobile-card-content">
+                <div className="mobile-card-header">
+                  <h3 className="mobile-title">{game.title}</h3>
+                  <div className="mobile-delete-wrapper">
+                    <button
+                      className="mobile-delete-btn"
+                      onClick={(event) => {
+                        event.stopPropagation()
+                        handleDelete(game.id)
+                      }}
+                      title="Eliminar de la lista"
+                    >
+                      <span className="material-symbols-outlined">delete</span>
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="mobile-platform-row">
+                  {game.platform_logo_url ? (
+                    <div className="mobile-platform-logo-wrapper">
+                      <img 
+                        src={game.platform_logo_url.split(',')[0]} 
+                        alt={game.platform ? game.platform.split(', ')[0] : ''} 
+                        className="mobile-platform-logo" 
+                      />
+                      <span className="mobile-platform-text">{game.platform ? game.platform.split(', ')[0] : ''}</span>
+                    </div>
+                  ) : (
+                    <span className="mobile-platform-text">{game.platform ? game.platform.split(', ')[0] : '-'}</span>
+                  )}
+                </div>
+                
+                <div className="mobile-rating">
+                  <Stars value={game.rating} />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="mobile-only mobile-grid">
+        {!isLoading && visibleGames.length === 0 ? (
+          <div className="empty-cell">
+            Aún no hay juegos. Agrega el primero con el botón superior.
+          </div>
+        ) : null}
+        {paginatedGames.map((game) => (
+          <div key={game.id} className="mobile-game-card" onClick={() => setSelectedGame(game)}>
+            <div className="mobile-cover-wrapper">
+              {game.cover_url ? (
+                <img src={game.cover_url} alt={game.title} className="mobile-cover" />
+              ) : (
+                <div className="mobile-cover-placeholder">Sin imagen</div>
+              )}
+              {game.metacritic ? (
+                <div className="mobile-metacritic-badge">{game.metacritic}</div>
+              ) : null}
+            </div>
+            
+            <div className="mobile-card-content">
+              <div className="mobile-card-header">
+                <h3 className="mobile-title">{game.title}</h3>
+                <div className="mobile-delete-wrapper">
+                  <button
+                    className="mobile-delete-btn"
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      handleDelete(game.id)
+                    }}
+                  >
+                    <span className="material-symbols-outlined">more_vert</span>
+                  </button>
+                </div>
+              </div>
+              
+              <div className="mobile-platform-row">
+                {game.platform_logo_url ? (
+                  <div className="mobile-platform-logo-wrapper">
+                    <img 
+                      src={game.platform_logo_url.split(',')[0]} 
+                      alt={game.platform ? game.platform.split(', ')[0] : ''} 
+                      className="mobile-platform-logo" 
+                    />
+                    <span className="mobile-platform-text">{game.platform ? game.platform.split(', ')[0] : ''}</span>
+                  </div>
+                ) : (
+                  <span className="mobile-platform-text">{game.platform ? game.platform.split(', ')[0] : '-'}</span>
+                )}
+              </div>
+              
+              <div className="mobile-rating">
+                <Stars value={game.rating} />
+              </div>
+            </div>
+          </div>
+        ))}
+      </section>
+
       {visibleGames.length > 10 ? (
         <Pagination
           currentPage={currentPage}
@@ -267,55 +426,7 @@ function App() {
       ) : null}
 
       {selectedGame ? (
-        <div className="detail-backdrop" onClick={closeDetail}>
-          <section className="detail-panel" onClick={(event) => event.stopPropagation()}>
-            <button className="btn btn-sm btn-outline-secondary detail-close" onClick={closeDetail}>
-              Cerrar
-            </button>
-
-            <div className="detail-cover-column">
-              {selectedGame.cover_url ? (
-                <img src={selectedGame.cover_url} alt={selectedGame.title} className="detail-cover-image" />
-              ) : (
-                <div className="detail-cover-empty">Sin carátula</div>
-              )}
-            </div>
-
-            <div className="detail-info-column">
-              <h2 className="detail-title">{selectedGame.title}</h2>
-              <p className="detail-subtitle">Detalle del juego</p>
-
-              <div className="detail-grid">
-                <div className="detail-item">
-                  <span className="detail-label">Plataforma</span>
-                  <strong>{selectedGame.platform || '-'}</strong>
-                </div>
-                <div className="detail-item">
-                  <span className="detail-label">Género</span>
-                  <strong>{selectedGame.genre || '-'}</strong>
-                </div>
-                <div className="detail-item">
-                  <span className="detail-label">Año</span>
-                  <strong>{selectedGame.release_year || '-'}</strong>
-                </div>
-                <div className="detail-item">
-                  <span className="detail-label">Metacritic</span>
-                  <strong>{selectedGame.metacritic || '-'}</strong>
-                </div>
-                <div className="detail-item">
-                  <span className="detail-label">Calificación</span>
-                  <strong>
-                    <Stars value={selectedGame.rating} />
-                  </strong>
-                </div>
-                <div className="detail-item">
-                  <span className="detail-label">IGDB ID</span>
-                  <strong>{selectedGame.igdb_id || '-'}</strong>
-                </div>
-              </div>
-            </div>
-          </section>
-        </div>
+        <GameDetail game={selectedGame} onClose={closeDetail} />
       ) : null}
 
       {showModal ? (
