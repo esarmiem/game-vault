@@ -6,7 +6,8 @@
 
 #### Aplicación de escritorio multiplataforma para gestionar tu biblioteca de juegos con almacenamiento local.
 
-<img width="800" height="600" alt="image" src="https://github.com/user-attachments/assets/08c362e4-fb07-4c0b-ae19-d6ca0c729923" />
+<img width="800" height="600" alt="vault" src="https://github.com/user-attachments/assets/bc269591-5261-4465-bbe2-342a93ffccc9" />
+
 
 ## Stack
 
