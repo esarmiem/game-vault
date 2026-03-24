@@ -35,6 +35,7 @@ function App() {
   const [games, setGames] = useState<Game[]>([])
   const [search, setSearch] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list')
   const [isSaving, setIsSaving] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [showModal, setShowModal] = useState(false)
@@ -192,17 +193,35 @@ function App() {
       </section>
 
       <section className="toolbar">
-        <input
-          className="form-control search-input"
-          placeholder="Buscar por nombre o plataforma"
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-        />
+        <div className="toolbar-content">
+          <input
+            className="form-control search-input"
+            placeholder="Buscar por nombre o plataforma"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+          />
+          <div className="view-toggles desktop-only">
+            <button 
+              className={`view-toggle-btn ${viewMode === 'list' ? 'active' : ''}`}
+              onClick={() => setViewMode('list')}
+              title="Vista de lista"
+            >
+              <span className="material-symbols-outlined">view_list</span>
+            </button>
+            <button 
+              className={`view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
+              onClick={() => setViewMode('grid')}
+              title="Vista de cuadrícula"
+            >
+              <span className="material-symbols-outlined">grid_view</span>
+            </button>
+          </div>
+        </div>
       </section>
 
       {errorMessage ? <div className="alert alert-danger">{errorMessage}</div> : null}
 
-      <section className="table-card desktop-only">
+      <section className={`table-card desktop-only ${viewMode === 'grid' ? 'hidden' : ''}`}>
         <div className="table-responsive game-list-scroll">
           <table className="table table-hover align-middle game-table">
             <thead>
@@ -276,6 +295,67 @@ function App() {
               ))}
             </tbody>
           </table>
+        </div>
+      </section>
+
+      <section className={`desktop-only ${viewMode === 'list' ? 'hidden' : ''}`}>
+        <div className="desktop-grid">
+          {!isLoading && visibleGames.length === 0 ? (
+            <div className="empty-cell" style={{ gridColumn: '1 / -1' }}>
+              Aún no hay juegos. Agrega el primero con el botón superior.
+            </div>
+          ) : null}
+          {paginatedGames.map((game) => (
+            <div key={game.id} className="mobile-game-card desktop-game-card" onClick={() => setSelectedGame(game)}>
+              <div className="mobile-cover-wrapper">
+                {game.cover_url ? (
+                  <img src={game.cover_url} alt={game.title} className="mobile-cover" />
+                ) : (
+                  <div className="mobile-cover-placeholder">Sin imagen</div>
+                )}
+                {game.metacritic ? (
+                  <div className="mobile-metacritic-badge">{game.metacritic}</div>
+                ) : null}
+              </div>
+              
+              <div className="mobile-card-content">
+                <div className="mobile-card-header">
+                  <h3 className="mobile-title">{game.title}</h3>
+                  <div className="mobile-delete-wrapper">
+                    <button
+                      className="mobile-delete-btn"
+                      onClick={(event) => {
+                        event.stopPropagation()
+                        handleDelete(game.id)
+                      }}
+                      title="Eliminar de la lista"
+                    >
+                      <span className="material-symbols-outlined">delete</span>
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="mobile-platform-row">
+                  {game.platform_logo_url ? (
+                    <div className="mobile-platform-logo-wrapper">
+                      <img 
+                        src={game.platform_logo_url.split(',')[0]} 
+                        alt={game.platform ? game.platform.split(', ')[0] : ''} 
+                        className="mobile-platform-logo" 
+                      />
+                      <span className="mobile-platform-text">{game.platform ? game.platform.split(', ')[0] : ''}</span>
+                    </div>
+                  ) : (
+                    <span className="mobile-platform-text">{game.platform ? game.platform.split(', ')[0] : '-'}</span>
+                  )}
+                </div>
+                
+                <div className="mobile-rating">
+                  <Stars value={game.rating} />
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 

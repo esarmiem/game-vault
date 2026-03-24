@@ -120,6 +120,12 @@ h1, h2, h3, h4, h5, h6 {
   width: 100%;
 }
 
+.toolbar-content {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
 .search-input {
   border-radius: 12px;
   border: 1px solid #d6d6e9;
@@ -127,6 +133,190 @@ h1, h2, h3, h4, h5, h6 {
   font-family: 'Plus Jakarta Sans', sans-serif;
   width: 100%;
   box-sizing: border-box;
+}
+
+.view-toggles {
+  display: flex;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #d6d6e9;
+  padding: 4px;
+  gap: 4px;
+}
+
+.view-toggle-btn {
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  color: #667192;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.view-toggle-btn:hover {
+  background: #f4f7fa;
+  color: #2b2f32;
+}
+
+.view-toggle-btn.active {
+  background: #eef1f6;
+  color: #0059b8;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.desktop-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+
+/* Card Styles (Shared for both Mobile and Desktop Grid) */
+.mobile-game-card {
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(43, 47, 50, 0.05);
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.mobile-game-card:active {
+  transform: scale(0.98);
+}
+
+.mobile-cover-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3/4;
+  background: #f2f3fb;
+  padding: 12px;
+}
+
+.mobile-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.mobile-cover-placeholder {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  color: #8188a6;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: #e5e7f4;
+  border-radius: 10px;
+}
+
+.mobile-metacritic-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: #bdd2ff;
+  color: #004592;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.mobile-card-content {
+  padding: 12px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.mobile-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.mobile-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #2b2f32;
+  margin: 0;
+  line-height: 1.2;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.mobile-delete-btn {
+  background: transparent;
+  border: none;
+  color: #667192;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-platform-row {
+  display: flex;
+  align-items: center;
+}
+
+.mobile-platform-logo-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mobile-platform-logo {
+  max-width: 18px;
+  max-height: 18px;
+  object-fit: contain;
+}
+
+.mobile-platform-text {
+  font-size: 0.75rem;
+  color: #667192;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.mobile-rating {
+  margin-top: 4px;
+  transform: scale(0.9);
+  transform-origin: left center;
+}
+
+.desktop-game-card {
+  height: 100%;
+}
+
+.desktop-game-card .mobile-delete-btn {
+  opacity: 0;
+  transition: opacity 0.2s;
+  color: #fb5151;
+}
+
+.desktop-game-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(43, 47, 50, 0.08);
+}
+
+.desktop-game-card:hover .mobile-delete-btn {
+  opacity: 1;
 }
 
 .table-card {
@@ -442,125 +632,5 @@ h1, h2, h3, h4, h5, h6 {
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
     width: 100%;
-  }
-
-  .mobile-game-card {
-    background: #ffffff;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(43, 47, 50, 0.05);
-    display: flex;
-    flex-direction: column;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-
-  .mobile-game-card:active {
-    transform: scale(0.98);
-  }
-
-  .mobile-cover-wrapper {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 3/4;
-    background: #f2f3fb;
-    padding: 12px;
-  }
-
-  .mobile-cover {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  }
-
-  .mobile-cover-placeholder {
-    width: 100%;
-    height: 100%;
-    display: grid;
-    place-items: center;
-    color: #8188a6;
-    font-size: 0.8rem;
-    font-weight: 600;
-    background: #e5e7f4;
-    border-radius: 10px;
-  }
-
-  .mobile-metacritic-badge {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    background: #bdd2ff;
-    color: #004592;
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 700;
-    font-size: 0.8rem;
-    padding: 2px 8px;
-    border-radius: 6px;
-  }
-
-  .mobile-card-content {
-    padding: 12px 16px 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .mobile-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .mobile-title {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #2b2f32;
-    margin: 0;
-    line-height: 1.2;
-    font-family: 'Space Grotesk', sans-serif;
-  }
-
-  .mobile-delete-btn {
-    background: transparent;
-    border: none;
-    color: #667192;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .mobile-platform-row {
-    display: flex;
-    align-items: center;
-  }
-
-  .mobile-platform-logo-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .mobile-platform-logo {
-    max-width: 18px;
-    max-height: 18px;
-    object-fit: contain;
-  }
-
-  .mobile-platform-text {
-    font-size: 0.75rem;
-    color: #667192;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .mobile-rating {
-    margin-top: 4px;
-    transform: scale(0.9);
-    transform-origin: left center;
   }
 }
