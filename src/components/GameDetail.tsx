@@ -8,6 +8,10 @@ type GameDetailProps = {
   onClose: () => void
 }
 
+import { open } from '@tauri-apps/plugin-shell'
+
+// ... existing imports ...
+
 export function GameDetail({ game, onClose }: GameDetailProps) {
   const [details, setDetails] = useState<IgdbGameDetails | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -155,16 +159,26 @@ export function GameDetail({ game, onClose }: GameDetailProps) {
                   </div>
                   <div className="video-grid">
                     {videos.map((vid, i) => (
-                      <div key={vid} className="video-card">
+                        <div 
+                        key={vid} 
+                        className="video-card external-video-card"
+                        onClick={async () => {
+                          try {
+                            await open(`https://www.youtube.com/watch?v=${vid}`)
+                          } catch (err) {
+                            console.error('❌ [Error]: No se pudo abrir YouTube:', err)
+                          }
+                        }}
+                      >
                         <div className="video-thumbnail">
-                          <iframe
-                            src={`https://www.youtube.com/embed/${vid}`}
-                            title={`Video ${i + 1}`}
-                            frameBorder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                          ></iframe>
+                          <img src={`https://img.youtube.com/vi/${vid}/maxresdefault.jpg`} alt={`Video ${i + 1}`} loading="lazy" />
+                          <div className="play-button-overlay">
+                            <div className="play-button">
+                              <span className="material-symbols-outlined">play_arrow</span>
+                            </div>
+                          </div>
                         </div>
+                        <p className="external-link-hint">Abrir en YouTube <span className="material-symbols-outlined text-sm">open_in_new</span></p>
                       </div>
                     ))}
                   </div>

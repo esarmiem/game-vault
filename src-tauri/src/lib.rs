@@ -619,6 +619,7 @@ fn get_igdb_game_details(state: tauri::State<'_, AppState>, igdb_id: i64) -> Res
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   tauri::Builder::default()
+    .plugin(tauri_plugin_shell::init())
     .setup(|app| {
       if cfg!(debug_assertions) {
         app.handle().plugin(
